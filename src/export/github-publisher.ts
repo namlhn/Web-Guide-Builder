@@ -123,7 +123,7 @@ export async function publishProjectToGitHub(
   }
 
   // Live URL on GitHub Pages
-  const liveUrl = `https://${owner}.github.io/${repo}/${filename}`;
+  const liveUrl = `https://${owner}.github.io/${repo}/docs/${filename}`;
 
   return { liveUrl, filename };
 }
