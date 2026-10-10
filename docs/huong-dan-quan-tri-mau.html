@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hướng dẫn Quản trị Hệ thống &amp; Người dùng — Tài liệu hướng dẫn</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar / TOC */
+    .sidebar {
+      width: 320px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 24px 16px;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .sidebar-doc-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .toc-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .toc-group {
+      margin-bottom: 18px;
+    }
+
+    .toc-feat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s;
+    }
+
+    .toc-feat:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .toc-feat-idx {
+      color: var(--primary);
+    }
+
+    .toc-steps {
+      margin-left: 12px;
+      padding-left: 8px;
+      border-left: 2px solid var(--border-color);
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toc-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 5px 8px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+    }
+
+    .toc-step:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .toc-step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      flex-shrink: 0;
+    }
+
+    .toc-step:hover .toc-step-num {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .toc-step-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 40px 48px;
+      max-width: 1040px;
+    }
+
+    /* Cover / Header Banner */
+    .doc-cover {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 40px;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .doc-main-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .doc-description {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .doc-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-val {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .btn-print {
+      margin-left: auto;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-print:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Feature Section */
+    .feature-section {
+      margin-bottom: 48px;
+    }
+
+    .feature-header {
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .feature-tag {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .feature-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Steps */
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      scroll-margin-top: 24px;
+    }
+
+    .step-header {
+      padding: 18px 24px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .step-badge {
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .step-meta {
+      padding: 8px 24px;
+      background: #f8fafc;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .meta-url {
+      color: var(--primary);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .meta-url:hover {
+      text-decoration: underline;
+    }
+
+    .step-image-wrap {
+      position: relative;
+      background: #0f172a;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .step-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
+      display: block;
+      margin: 0 auto;
+      box-shadow: var(--shadow-md);
+      cursor: zoom-in;
+      transition: transform 0.2s;
+    }
+
+    .step-image:hover {
+      transform: scale(1.005);
+    }
+
+    .image-hint {
+      position: absolute;
+      bottom: 18px;
+      right: 20px;
+      background: rgba(15, 23, 42, 0.75);
+      color: #ffffff;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+
+    .step-no-image {
+      padding: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      font-style: italic;
+      background: #f1f5f9;
+    }
+
+    .step-body {
+      padding: 20px 24px;
+    }
+
+    .step-desc-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .step-desc {
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.7;
+    }
+
+    .empty-steps {
+      padding: 32px;
+      text-align: center;
+      color: var(--text-muted);
+      background: #fff;
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-md);
+    }
+
+    /* Lightbox Modal */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      cursor: zoom-out;
+      padding: 20px;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-img {
+      max-width: 95%;
+      max-height: 95%;
+      border-radius: 8px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+
+    /* Print styling */
+    @media print {
+      .sidebar, .btn-print, .image-hint {
+        display: none !important;
+      }
+      .main-content {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .app-layout {
+        display: block !important;
+      }
+      .step-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        border: 1px solid #ccc !important;
+        margin-bottom: 24px !important;
+      }
+      .step-image-wrap {
+        background: transparent !important;
+        padding: 0 !important;
+      }
+      body {
+        background: #ffffff !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .main-content {
+        padding: 20px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="brand-title">Web Guide Builder</div>
+      <div class="sidebar-doc-title">Hướng dẫn Quản trị Hệ thống &amp; Người dùng</div>
+      <div class="toc-title">Mục lục hướng dẫn</div>
+      <nav class="toc-nav">
+        
+        <div class="toc-group">
+          <a class="toc-feat" href="#feature-feat_mv22s38a_sgrwfb">
+            <span class="toc-feat-idx">1.</span>
+            <span>1. Đăng nhập &amp; Xác thực bảo mật</span>
+          </a>
+          <div class="toc-steps">
+            <a class="toc-step" href="#step-step_mv22s38g_uy5oeb">
+              <span class="toc-step-num">1</span>
+              <span class="toc-step-title">Bước 1: Nhập thông tin đăng nhập</span>
+            </a>
+          </div>
+        </div>
+      
+        <div class="toc-group">
+          <a class="toc-feat" href="#feature-feat_mv22s38k_fdqhqn">
+            <span class="toc-feat-idx">2.</span>
+            <span>2. Quản lý Tài khoản &amp; Phân quyền</span>
+          </a>
+          <div class="toc-steps">
+            <a class="toc-step" href="#step-step_mv22s38n_cy2jgq">
+              <span class="toc-step-num">1</span>
+              <span class="toc-step-title">Bước 1: Mở danh sách và tạo tài khoản mới</span>
+            </a>
+          </div>
+        </div>
+      
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="doc-cover">
+        <span class="cover-badge">Tài liệu hướng dẫn trực quan</span>
+        <h1 class="doc-main-title">Hướng dẫn Quản trị Hệ thống &amp; Người dùng</h1>
+        <p class="doc-description">Tài liệu hướng dẫn mẫu dành cho quản trị viên phần mềm: bao gồm thao tác đăng nhập, bảo mật và phân quyền tài khoản.</p>
+        <div class="doc-stats">
+          <div class="stat-item">
+            <span>Tính năng:</span>
+            <span class="stat-val">2</span>
+          </div>
+          <div class="stat-item">
+            <span>Tổng số bước:</span>
+            <span class="stat-val">2</span>
+          </div>
+          <div class="stat-item">
+            <span>Thời điểm xuất:</span>
+            <span class="stat-val">14:31 ngày 10/10/2026</span>
+          </div>
+          <button class="btn-print" onclick="window.print()">🖨️ In / Lưu PDF</button>
+        </div>
+      </header>
+
+      
+        <section class="feature-section" id="feature-feat_mv22s38a_sgrwfb">
+          <div class="feature-header">
+            <span class="feature-tag">Tính năng 1</span>
+            <h2 class="feature-title">1. Đăng nhập &amp; Xác thực bảo mật</h2>
+            <p class="feature-desc">Quy trình đăng nhập vào cổng thông tin quản trị và cấu hình xác thực 2 lớp.</p>
+          </div>
+          <div class="steps-container">
+            
+            <article class="step-card" id="step-step_mv22s38g_uy5oeb">
+              <header class="step-header">
+                <div class="step-badge">Bước 1</div>
+                <h3 class="step-title">Bước 1: Nhập thông tin đăng nhập</h3>
+              </header>
+
+              <div class="step-meta">
+                      <span class="meta-label">Đường dẫn trang:</span>
+                      <a href="https://admin.example.com/login" target="_blank" rel="noopener noreferrer" class="meta-url">https://admin.example.com/login</a>
+                    </div>
+
+              <div class="step-image-wrap">
+                      <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221024%22%20height%3D%22640%22%20viewBox%3D%220%200%201024%20640%22%3E%0A%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23f8fafc%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23f1f5f9%22%2F%3E%0A%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3Cfilter%20id%3D%22shadow%22%20x%3D%22-5%25%22%20y%3D%22-5%25%22%20width%3D%22110%25%22%20height%3D%22110%25%22%3E%0A%20%20%20%20%20%20%20%20%3CfeDropShadow%20dx%3D%220%22%20dy%3D%224%22%20stdDeviation%3D%228%22%20flood-opacity%3D%220.08%22%2F%3E%0A%20%20%20%20%20%20%3C%2Ffilter%3E%0A%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%3C!--%20Background%20--%3E%0A%20%20%20%20%3Crect%20width%3D%221024%22%20height%3D%22640%22%20fill%3D%22url(%23bg)%22%2F%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20App%20Window%20Frame%20--%3E%0A%20%20%20%20%3Crect%20x%3D%2232%22%20y%3D%2232%22%20width%3D%22960%22%20height%3D%22576%22%20rx%3D%2212%22%20fill%3D%22%23ffffff%22%20filter%3D%22url(%23shadow)%22%20stroke%3D%22%23e2e8f0%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20Header%20Bar%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M%2032%2044%20A%2012%2012%200%200%201%2044%2032%20L%20980%2032%20A%2012%2012%200%200%201%20992%2044%20L%20992%2084%20L%2032%2084%20Z%22%20fill%3D%22%231e293b%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2256%22%20cy%3D%2258%22%20r%3D%226%22%20fill%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2276%22%20cy%3D%2258%22%20r%3D%226%22%20fill%3D%22%23f59e0b%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2296%22%20cy%3D%2258%22%20r%3D%226%22%20fill%3D%22%2310b981%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22512%22%20y%3D%2263%22%20fill%3D%22%23cbd5e1%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20text-anchor%3D%22middle%22%20font-weight%3D%22500%22%3Ehttps%3A%2F%2Fadmin.example.com%2Fapp%3C%2Ftext%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20Sidebar%20Navigation%20--%3E%0A%20%20%20%20%3Crect%20x%3D%2232%22%20y%3D%2284%22%20width%3D%22220%22%20height%3D%22524%22%20fill%3D%22%230f172a%22%2F%3E%0A%20%20%20%20%3Crect%20x%3D%2248%22%20y%3D%22108%22%20width%3D%22188%22%20height%3D%2236%22%20rx%3D%226%22%20fill%3D%22%23334155%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22131%22%20fill%3D%22%23f8fafc%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%3E%F0%9F%93%8A%20B%E1%BA%A3ng%20%C4%91i%E1%BB%81u%20khi%E1%BB%83n%3C%2Ftext%3E%0A%20%20%20%20%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22180%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%F0%9F%91%A5%20Ng%C6%B0%E1%BB%9Di%20d%C3%B9ng%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22224%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%E2%9A%99%EF%B8%8F%20C%C3%A0i%20%C4%91%E1%BA%B7t%20h%E1%BB%87%20th%E1%BB%91ng%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22268%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%F0%9F%93%88%20B%C3%A1o%20c%C3%A1o%20th%E1%BB%91ng%20k%C3%AA%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22312%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%F0%9F%9B%A1%EF%B8%8F%20B%E1%BA%A3o%20m%E1%BA%ADt%20%26amp%3B%20Quy%E1%BB%81n%3C%2Ftext%3E%0A%0A%20%20%20%20%3C!--%20Main%20Content%20Area%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22252%22%20y%3D%2284%22%20width%3D%22740%22%20height%3D%22524%22%20fill%3D%22%23f8fafc%22%2F%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20Card%20Header%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22284%22%20y%3D%22112%22%20width%3D%22676%22%20height%3D%2288%22%20rx%3D%228%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23e2e8f0%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22312%22%20y%3D%22150%22%20fill%3D%22%230f172a%22%20font-size%3D%2220%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3E%C4%90%C4%83ng%20nh%E1%BA%ADp%20H%E1%BB%87%20th%E1%BB%91ng%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22312%22%20y%3D%22176%22%20fill%3D%22%2364748b%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3ENh%E1%BA%ADp%20t%C3%AAn%20%C4%91%C4%83ng%20nh%E1%BA%ADp%20v%C3%A0%20m%E1%BA%ADt%20kh%E1%BA%A9u%20%C4%91%C6%B0%E1%BB%A3c%20c%E1%BA%A5p%3C%2Ftext%3E%0A%0A%20%20%20%20%3C!--%20Content%20Form%2FTable%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22284%22%20y%3D%22224%22%20width%3D%22676%22%20height%3D%22350%22%20rx%3D%228%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23e2e8f0%22%20stroke-width%3D%221%22%2F%3E%0A%0A%20%20%20%20%3C!--%20Inputs%20%26%20Buttons%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22312%22%20y%3D%22256%22%20width%3D%22300%22%20height%3D%2242%22%20rx%3D%226%22%20fill%3D%22%23f8fafc%22%20stroke%3D%22%23cbd5e1%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22282%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3ENh%E1%BA%ADp%20email%20ho%E1%BA%B7c%20t%C3%AAn%20t%C3%A0i%20kho%E1%BA%A3n...%3C%2Ftext%3E%0A%0A%20%20%20%20%3Crect%20x%3D%22632%22%20y%3D%22256%22%20width%3D%22140%22%20height%3D%2242%22%20rx%3D%226%22%20fill%3D%22%232563eb%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22702%22%20y%3D%22282%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3ET%C3%ACm%20ki%E1%BA%BFm%3C%2Ftext%3E%0A%0A%20%20%20%20%3Crect%20x%3D%22800%22%20y%3D%22256%22%20width%3D%22130%22%20height%3D%2242%22%20rx%3D%226%22%20fill%3D%22%2310b981%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22865%22%20y%3D%22282%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3E%2B%20Th%C3%AAm%20m%E1%BB%9Bi%3C%2Ftext%3E%0A%0A%20%20%20%20%3C!--%20Mock%20Data%20Table%20Rows%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22312%22%20y%3D%22324%22%20width%3D%22620%22%20height%3D%2236%22%20fill%3D%22%23f1f5f9%22%20rx%3D%224%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3ESTT%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3EH%E1%BB%8D%20v%C3%A0%20t%C3%AAn%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3EEmail%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22760%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3ETr%E1%BA%A1ng%20th%C3%A1i%3C%2Ftext%3E%0A%0A%20%20%20%20%3Cline%20x1%3D%22312%22%20y1%3D%22400%22%20x2%3D%22932%22%20y2%3D%22400%22%20stroke%3D%22%23f1f5f9%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22388%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E1%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22388%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3ENguy%E1%BB%85n%20V%C4%83n%20An%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22388%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3Ean.nguyen%40example.com%3C%2Ftext%3E%0A%20%20%20%20%3Crect%20x%3D%22760%22%20y%3D%22374%22%20width%3D%2280%22%20height%3D%2220%22%20rx%3D%2210%22%20fill%3D%22%23dcfce7%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22800%22%20y%3D%22388%22%20fill%3D%22%2315803d%22%20font-size%3D%2211%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%20text-anchor%3D%22middle%22%3E%C4%90ang%20ho%E1%BA%A1t%20%C4%91%E1%BB%99ng%3C%2Ftext%3E%0A%0A%20%20%20%20%3Cline%20x1%3D%22312%22%20y1%3D%22440%22%20x2%3D%22932%22%20y2%3D%22440%22%20stroke%3D%22%23f1f5f9%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22428%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E2%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22428%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3ETr%E1%BA%A7n%20Th%E1%BB%8B%20B%C3%ADch%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22428%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3Ebich.tran%40example.com%3C%2Ftext%3E%0A%20%20%20%20%3Crect%20x%3D%22760%22%20y%3D%22414%22%20width%3D%2280%22%20height%3D%2220%22%20rx%3D%2210%22%20fill%3D%22%23fef3c7%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22800%22%20y%3D%22428%22%20fill%3D%22%23b45309%22%20font-size%3D%2211%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%20text-anchor%3D%22middle%22%3ECh%E1%BB%9D%20x%C3%A1c%20th%E1%BB%B1c%3C%2Ftext%3E%0A%0A%20%20%20%20%3Cline%20x1%3D%22312%22%20y1%3D%22480%22%20x2%3D%22932%22%20y2%3D%22480%22%20stroke%3D%22%23f1f5f9%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22468%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E3%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22468%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3EL%C3%AA%20Ho%C3%A0ng%20Nam%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22468%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3Enam.le%40example.com%3C%2Ftext%3E%0A%20%20%20%20%3Crect%20x%3D%22760%22%20y%3D%22454%22%20width%3D%2280%22%20height%3D%2220%22%20rx%3D%2210%22%20fill%3D%22%23dcfce7%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22800%22%20y%3D%22468%22%20fill%3D%22%2315803d%22%20font-size%3D%2211%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%20text-anchor%3D%22middle%22%3E%C4%90ang%20ho%E1%BA%A1t%20%C4%91%E1%BB%99ng%3C%2Ftext%3E%0A%20%20%3C%2Fsvg%3E" alt="Bước 1: Nhập thông tin đăng nhập" class="step-image" onclick="openLightbox(this.src)" />
+                      <div class="image-hint">🔍 Nhấp vào ảnh để xem kích thước lớn</div>
+                    </div>
+
+              <div class="step-body">
+                      <div class="step-desc-title">Mô tả và thao tác thực hiện:</div>
+                      <div class="step-desc">Mở trình duyệt, truy cập địa chỉ portal quản trị. Nhập email doanh nghiệp và mật khẩu tạm thời được cung cấp qua email kích hoạt.</div>
+                    </div>
+            </article>
+          
+          </div>
+        </section>
+      
+        <section class="feature-section" id="feature-feat_mv22s38k_fdqhqn">
+          <div class="feature-header">
+            <span class="feature-tag">Tính năng 2</span>
+            <h2 class="feature-title">2. Quản lý Tài khoản &amp; Phân quyền</h2>
+            <p class="feature-desc">Hướng dẫn tìm kiếm, thêm mới thành viên và cấu hình quyền truy cập theo vai trò.</p>
+          </div>
+          <div class="steps-container">
+            
+            <article class="step-card" id="step-step_mv22s38n_cy2jgq">
+              <header class="step-header">
+                <div class="step-badge">Bước 2</div>
+                <h3 class="step-title">Bước 1: Mở danh sách và tạo tài khoản mới</h3>
+              </header>
+
+              <div class="step-meta">
+                      <span class="meta-label">Đường dẫn trang:</span>
+                      <a href="https://admin.example.com/users" target="_blank" rel="noopener noreferrer" class="meta-url">https://admin.example.com/users</a>
+                    </div>
+
+              <div class="step-image-wrap">
+                      <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221024%22%20height%3D%22640%22%20viewBox%3D%220%200%201024%20640%22%3E%0A%20%20%20%20%3Cdefs%3E%0A%20%20%20%20%20%20%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%0A%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%23f8fafc%22%2F%3E%0A%20%20%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23f1f5f9%22%2F%3E%0A%20%20%20%20%20%20%3C%2FlinearGradient%3E%0A%20%20%20%20%20%20%3Cfilter%20id%3D%22shadow%22%20x%3D%22-5%25%22%20y%3D%22-5%25%22%20width%3D%22110%25%22%20height%3D%22110%25%22%3E%0A%20%20%20%20%20%20%20%20%3CfeDropShadow%20dx%3D%220%22%20dy%3D%224%22%20stdDeviation%3D%228%22%20flood-opacity%3D%220.08%22%2F%3E%0A%20%20%20%20%20%20%3C%2Ffilter%3E%0A%20%20%20%20%3C%2Fdefs%3E%0A%20%20%20%20%3C!--%20Background%20--%3E%0A%20%20%20%20%3Crect%20width%3D%221024%22%20height%3D%22640%22%20fill%3D%22url(%23bg)%22%2F%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20App%20Window%20Frame%20--%3E%0A%20%20%20%20%3Crect%20x%3D%2232%22%20y%3D%2232%22%20width%3D%22960%22%20height%3D%22576%22%20rx%3D%2212%22%20fill%3D%22%23ffffff%22%20filter%3D%22url(%23shadow)%22%20stroke%3D%22%23e2e8f0%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20Header%20Bar%20--%3E%0A%20%20%20%20%3Cpath%20d%3D%22M%2032%2044%20A%2012%2012%200%200%201%2044%2032%20L%20980%2032%20A%2012%2012%200%200%201%20992%2044%20L%20992%2084%20L%2032%2084%20Z%22%20fill%3D%22%231e293b%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2256%22%20cy%3D%2258%22%20r%3D%226%22%20fill%3D%22%23ef4444%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2276%22%20cy%3D%2258%22%20r%3D%226%22%20fill%3D%22%23f59e0b%22%2F%3E%0A%20%20%20%20%3Ccircle%20cx%3D%2296%22%20cy%3D%2258%22%20r%3D%226%22%20fill%3D%22%2310b981%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22512%22%20y%3D%2263%22%20fill%3D%22%23cbd5e1%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20text-anchor%3D%22middle%22%20font-weight%3D%22500%22%3Ehttps%3A%2F%2Fadmin.example.com%2Fapp%3C%2Ftext%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20Sidebar%20Navigation%20--%3E%0A%20%20%20%20%3Crect%20x%3D%2232%22%20y%3D%2284%22%20width%3D%22220%22%20height%3D%22524%22%20fill%3D%22%230f172a%22%2F%3E%0A%20%20%20%20%3Crect%20x%3D%2248%22%20y%3D%22108%22%20width%3D%22188%22%20height%3D%2236%22%20rx%3D%226%22%20fill%3D%22%23334155%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22131%22%20fill%3D%22%23f8fafc%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%3E%F0%9F%93%8A%20B%E1%BA%A3ng%20%C4%91i%E1%BB%81u%20khi%E1%BB%83n%3C%2Ftext%3E%0A%20%20%20%20%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22180%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%F0%9F%91%A5%20Ng%C6%B0%E1%BB%9Di%20d%C3%B9ng%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22224%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%E2%9A%99%EF%B8%8F%20C%C3%A0i%20%C4%91%E1%BA%B7t%20h%E1%BB%87%20th%E1%BB%91ng%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22268%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%F0%9F%93%88%20B%C3%A1o%20c%C3%A1o%20th%E1%BB%91ng%20k%C3%AA%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%2264%22%20y%3D%22312%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E%F0%9F%9B%A1%EF%B8%8F%20B%E1%BA%A3o%20m%E1%BA%ADt%20%26amp%3B%20Quy%E1%BB%81n%3C%2Ftext%3E%0A%0A%20%20%20%20%3C!--%20Main%20Content%20Area%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22252%22%20y%3D%2284%22%20width%3D%22740%22%20height%3D%22524%22%20fill%3D%22%23f8fafc%22%2F%3E%0A%20%20%20%20%0A%20%20%20%20%3C!--%20Card%20Header%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22284%22%20y%3D%22112%22%20width%3D%22676%22%20height%3D%2288%22%20rx%3D%228%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23e2e8f0%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22312%22%20y%3D%22150%22%20fill%3D%22%230f172a%22%20font-size%3D%2220%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3EDanh%20s%C3%A1ch%20Ng%C6%B0%E1%BB%9Di%20d%C3%B9ng%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22312%22%20y%3D%22176%22%20fill%3D%22%2364748b%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3EQu%E1%BA%A3n%20l%C3%BD%20to%C3%A0n%20b%E1%BB%99%20nh%C3%A2n%20s%E1%BB%B1%20v%C3%A0%20ph%C3%A2n%20quy%E1%BB%81n%20ph%C3%B2ng%20ban%3C%2Ftext%3E%0A%0A%20%20%20%20%3C!--%20Content%20Form%2FTable%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22284%22%20y%3D%22224%22%20width%3D%22676%22%20height%3D%22350%22%20rx%3D%228%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23e2e8f0%22%20stroke-width%3D%221%22%2F%3E%0A%0A%20%20%20%20%3C!--%20Inputs%20%26%20Buttons%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22312%22%20y%3D%22256%22%20width%3D%22300%22%20height%3D%2242%22%20rx%3D%226%22%20fill%3D%22%23f8fafc%22%20stroke%3D%22%23cbd5e1%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22282%22%20fill%3D%22%2394a3b8%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3ENh%E1%BA%ADp%20email%20ho%E1%BA%B7c%20t%C3%AAn%20t%C3%A0i%20kho%E1%BA%A3n...%3C%2Ftext%3E%0A%0A%20%20%20%20%3Crect%20x%3D%22632%22%20y%3D%22256%22%20width%3D%22140%22%20height%3D%2242%22%20rx%3D%226%22%20fill%3D%22%23059669%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22702%22%20y%3D%22282%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3ET%C3%ACm%20ki%E1%BA%BFm%3C%2Ftext%3E%0A%0A%20%20%20%20%3Crect%20x%3D%22800%22%20y%3D%22256%22%20width%3D%22130%22%20height%3D%2242%22%20rx%3D%226%22%20fill%3D%22%2310b981%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22865%22%20y%3D%22282%22%20fill%3D%22%23ffffff%22%20font-size%3D%2214%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%20text-anchor%3D%22middle%22%3E%2B%20Th%C3%AAm%20m%E1%BB%9Bi%3C%2Ftext%3E%0A%0A%20%20%20%20%3C!--%20Mock%20Data%20Table%20Rows%20--%3E%0A%20%20%20%20%3Crect%20x%3D%22312%22%20y%3D%22324%22%20width%3D%22620%22%20height%3D%2236%22%20fill%3D%22%23f1f5f9%22%20rx%3D%224%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3ESTT%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3EH%E1%BB%8D%20v%C3%A0%20t%C3%AAn%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3EEmail%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22760%22%20y%3D%22347%22%20fill%3D%22%23475569%22%20font-size%3D%2212%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22bold%22%3ETr%E1%BA%A1ng%20th%C3%A1i%3C%2Ftext%3E%0A%0A%20%20%20%20%3Cline%20x1%3D%22312%22%20y1%3D%22400%22%20x2%3D%22932%22%20y2%3D%22400%22%20stroke%3D%22%23f1f5f9%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22388%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E1%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22388%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3ENguy%E1%BB%85n%20V%C4%83n%20An%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22388%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3Ean.nguyen%40example.com%3C%2Ftext%3E%0A%20%20%20%20%3Crect%20x%3D%22760%22%20y%3D%22374%22%20width%3D%2280%22%20height%3D%2220%22%20rx%3D%2210%22%20fill%3D%22%23dcfce7%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22800%22%20y%3D%22388%22%20fill%3D%22%2315803d%22%20font-size%3D%2211%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%20text-anchor%3D%22middle%22%3E%C4%90ang%20ho%E1%BA%A1t%20%C4%91%E1%BB%99ng%3C%2Ftext%3E%0A%0A%20%20%20%20%3Cline%20x1%3D%22312%22%20y1%3D%22440%22%20x2%3D%22932%22%20y2%3D%22440%22%20stroke%3D%22%23f1f5f9%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22428%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E2%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22428%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3ETr%E1%BA%A7n%20Th%E1%BB%8B%20B%C3%ADch%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22428%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3Ebich.tran%40example.com%3C%2Ftext%3E%0A%20%20%20%20%3Crect%20x%3D%22760%22%20y%3D%22414%22%20width%3D%2280%22%20height%3D%2220%22%20rx%3D%2210%22%20fill%3D%22%23fef3c7%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22800%22%20y%3D%22428%22%20fill%3D%22%23b45309%22%20font-size%3D%2211%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%20text-anchor%3D%22middle%22%3ECh%E1%BB%9D%20x%C3%A1c%20th%E1%BB%B1c%3C%2Ftext%3E%0A%0A%20%20%20%20%3Cline%20x1%3D%22312%22%20y1%3D%22480%22%20x2%3D%22932%22%20y2%3D%22480%22%20stroke%3D%22%23f1f5f9%22%20stroke-width%3D%221%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22328%22%20y%3D%22468%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3E3%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22380%22%20y%3D%22468%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3EL%C3%AA%20Ho%C3%A0ng%20Nam%3C%2Ftext%3E%0A%20%20%20%20%3Ctext%20x%3D%22560%22%20y%3D%22468%22%20fill%3D%22%23334155%22%20font-size%3D%2213%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%3Enam.le%40example.com%3C%2Ftext%3E%0A%20%20%20%20%3Crect%20x%3D%22760%22%20y%3D%22454%22%20width%3D%2280%22%20height%3D%2220%22%20rx%3D%2210%22%20fill%3D%22%23dcfce7%22%2F%3E%0A%20%20%20%20%3Ctext%20x%3D%22800%22%20y%3D%22468%22%20fill%3D%22%2315803d%22%20font-size%3D%2211%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20sans-serif%22%20font-weight%3D%22600%22%20text-anchor%3D%22middle%22%3E%C4%90ang%20ho%E1%BA%A1t%20%C4%91%E1%BB%99ng%3C%2Ftext%3E%0A%20%20%3C%2Fsvg%3E" alt="Bước 1: Mở danh sách và tạo tài khoản mới" class="step-image" onclick="openLightbox(this.src)" />
+                      <div class="image-hint">🔍 Nhấp vào ảnh để xem kích thước lớn</div>
+                    </div>
+
+              <div class="step-body">
+                      <div class="step-desc-title">Mô tả và thao tác thực hiện:</div>
+                      <div class="step-desc">Từ menu bên trái, chọn mục &quot;Người dùng&quot;. Nhấp chuột vào nút &quot;+ Thêm mới&quot; màu xanh ở góc trên bên phải của bảng để mở popup nhập thông tin thành viên.</div>
+                    </div>
+            </article>
+          
+          </div>
+        </section>
+      
+    </main>
+  </div>
+
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" class="lightbox-img" src="" alt="Enlarged screenshot" />
+  </div>
+
+  <script>
+    function openLightbox(src) {
+      var box = document.getElementById('lightbox');
+      var img = document.getElementById('lightbox-img');
+      img.src = src;
+      box.classList.add('active');
+    }
+
+    function closeLightbox() {
+      var box = document.getElementById('lightbox');
+      box.classList.remove('active');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

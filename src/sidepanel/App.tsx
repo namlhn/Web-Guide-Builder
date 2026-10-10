@@ -16,10 +16,19 @@ import {
   AlertCircle,
   FileText,
   RefreshCw,
+  Globe,
+  Copy,
+  Share2,
 } from 'lucide-react';
 import { repo } from '../db/repository';
 import { seedDemoGuideProject } from '../db/demo-data';
 import { prepareProjectExportData, generateHtmlDocument, downloadHtmlFile } from '../export/html-generator';
+import {
+  getGitHubConfig,
+  saveGitHubConfig,
+  publishProjectToGitHub,
+  type GitHubPublishConfig,
+} from '../export/github-publisher';
 import type { Project, Feature, GuideStep, ExtensionMessage, MessageResponse } from '../types';
 import '../shared/styles.css';
 import './sidepanel.css';
@@ -41,6 +50,12 @@ export function SidePanelApp() {
   const [featureModal, setFeatureModal] = useState<{ open: boolean; mode: 'create' | 'edit'; id?: string; title: string; desc: string } | null>(null);
   const [stepModal, setStepModal] = useState<{ open: boolean; step: GuideStep | null; title: string; desc: string } | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'project' | 'feature' | 'step'; id: string; name: string } | null>(null);
+  const [githubModal, setGithubModal] = useState<{
+    open: boolean;
+    config: GitHubPublishConfig;
+    isPublishing: boolean;
+    publishedUrl?: string;
+  } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -321,6 +336,44 @@ export function SidePanelApp() {
     } catch (err) {
       console.error(err);
       showToast('error', 'Khởi tạo tài liệu mẫu thất bại');
+    }
+  };
+
+  // Open GitHub publish modal
+  const handleOpenGitHubModal = async () => {
+    const config = await getGitHubConfig();
+    setGithubModal({
+      open: true,
+      config,
+      isPublishing: false,
+      publishedUrl: undefined,
+    });
+  };
+
+  // Publish to GitHub Pages
+  const handlePublishGitHub = async () => {
+    if (!githubModal || !activeProjectId) return;
+    setGithubModal((prev) => (prev ? { ...prev, isPublishing: true } : null));
+
+    try {
+      await saveGitHubConfig(githubModal.config);
+      const res = await publishProjectToGitHub(activeProjectId, githubModal.config);
+      setGithubModal((prev) =>
+        prev
+          ? {
+              ...prev,
+              isPublishing: false,
+              publishedUrl: res.liveUrl,
+            }
+          : null
+      );
+      // Auto copy to clipboard
+      await navigator.clipboard.writeText(res.liveUrl);
+      showToast('success', 'Đã xuất bản lên GitHub Pages & sao chép link!');
+    } catch (err) {
+      console.error(err);
+      setGithubModal((prev) => (prev ? { ...prev, isPublishing: false } : null));
+      showToast('error', err instanceof Error ? err.message : 'Xuất bản lên GitHub thất bại');
     }
   };
 
@@ -677,23 +730,36 @@ export function SidePanelApp() {
 
       {/* Bottom Actions Footer */}
       <footer className="panel-footer">
-        <button
-          className="btn btn-success btn-lg w-full"
-          disabled={!activeProjectId || isExporting}
-          onClick={handleExportHtml}
-        >
-          {isExporting ? (
-            <>
-              <RefreshCw size={16} className="spin" />
-              <span>Đang kết xuất tài liệu...</span>
-            </>
-          ) : (
-            <>
-              <Download size={16} />
-              <span>Xuất tài liệu HTML</span>
-            </>
-          )}
-        </button>
+        <div className="flex gap-2">
+          <button
+            className="btn btn-secondary flex-1"
+            disabled={!activeProjectId || isExporting}
+            onClick={handleExportHtml}
+            title="Tải file HTML về máy tính (hoạt động offline)"
+          >
+            {isExporting ? (
+              <>
+                <RefreshCw size={15} className="spin" />
+                <span>Đang kết xuất...</span>
+              </>
+            ) : (
+              <>
+                <Download size={15} />
+                <span>Tải HTML</span>
+              </>
+            )}
+          </button>
+
+          <button
+            className="btn btn-primary flex-1"
+            disabled={!activeProjectId}
+            onClick={handleOpenGitHubModal}
+            title="Xuất bản lên GitHub Pages & lấy đường link chia sẻ"
+          >
+            <Globe size={15} />
+            <span>Tạo link online</span>
+          </button>
+        </div>
       </footer>
 
       {/* ================= MODALS ================= */}
@@ -937,6 +1003,155 @@ export function SidePanelApp() {
               >
                 Xóa vĩnh viễn
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* GitHub Pages Publish Modal */}
+      {githubModal?.open && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '480px' }}>
+            <div className="modal-header">
+              <h3 className="modal-title flex items-center gap-2">
+                <Globe size={18} className="text-primary" />
+                <span>Xuất bản &amp; Chia sẻ qua GitHub Pages</span>
+              </h3>
+            </div>
+            <div className="modal-body">
+              {githubModal.publishedUrl ? (
+                <div className="p-3 bg-success-light border border-success rounded-md">
+                  <div className="flex items-center gap-2 text-success font-semibold mb-2">
+                    <CheckCircle2 size={18} />
+                    <span>Đã xuất bản thành công!</span>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">
+                    GitHub Pages đang kích hoạt liên kết cho tài liệu của bạn (thường mất từ 30s - 1 phút):
+                  </p>
+                  <div className="p-2 bg-white border border-gray-300 rounded text-xs font-mono break-all mb-3 text-primary">
+                    {githubModal.publishedUrl}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      className="btn btn-primary btn-sm flex-1"
+                      onClick={() => {
+                        navigator.clipboard.writeText(githubModal.publishedUrl || '');
+                        showToast('success', 'Đã sao chép liên kết vào clipboard!');
+                      }}
+                    >
+                      <Copy size={13} />
+                      <span>Sao chép link</span>
+                    </button>
+                    <a
+                      href={githubModal.publishedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-secondary btn-sm flex-1"
+                    >
+                      <ExternalLink size={13} />
+                      <span>Mở xem trang</span>
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-gray-600">
+                    Tiện ích sẽ tự động đẩy file HTML vào thư mục <code>docs/</code> trên GitHub của bạn. GitHub Pages sẽ tự động tạo đường link công khai để chia sẻ cho bất kỳ ai.
+                  </p>
+
+                  <div>
+                    <label className="form-label">GitHub Personal Access Token (*):</label>
+                    <input
+                      type="password"
+                      className="form-input"
+                      placeholder="ghp_xxxxxxxxxxxx hoặc github_pat_xxxx"
+                      value={githubModal.config.token}
+                      onChange={(e) =>
+                        setGithubModal({
+                          ...githubModal,
+                          config: { ...githubModal.config, token: e.target.value },
+                        })
+                      }
+                    />
+                    <div className="flex justify-between items-center mt-1">
+                      <a
+                        href="https://github.com/settings/tokens/new?scopes=repo&description=Web-Guide-Builder-Token"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline"
+                      >
+                        🔗 Nhấp để tạo Token trên GitHub (quyền repo)
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="form-label">Tài khoản GitHub:</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="namlhn"
+                        value={githubModal.config.owner}
+                        onChange={(e) =>
+                          setGithubModal({
+                            ...githubModal,
+                            config: { ...githubModal.config, owner: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="form-label">Tên Repository:</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="Web-Guide-Builder"
+                        value={githubModal.config.repo}
+                        onChange={(e) =>
+                          setGithubModal({
+                            ...githubModal,
+                            config: { ...githubModal.config, repo: e.target.value },
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                disabled={githubModal.isPublishing}
+                onClick={() => setGithubModal(null)}
+              >
+                Đóng
+              </button>
+              {!githubModal.publishedUrl && (
+                <button
+                  className="btn btn-primary"
+                  disabled={
+                    githubModal.isPublishing ||
+                    !githubModal.config.token.trim() ||
+                    !githubModal.config.owner.trim() ||
+                    !githubModal.config.repo.trim()
+                  }
+                  onClick={handlePublishGitHub}
+                >
+                  {githubModal.isPublishing ? (
+                    <>
+                      <RefreshCw size={15} className="spin" />
+                      <span>Đang tải lên GitHub...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share2 size={15} />
+                      <span>Xuất bản ngay</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>
